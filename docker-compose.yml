@@ -1,0 +1,40 @@
+version : '2'
+
+#volumes:
+#  django_sample_db_dev: {'e:\docker django workspace\frontweb\playgroundDB'}
+
+services:
+  db:
+    image: postgres:9.6.1
+#    volumes:
+#      - "./playgroundDB":/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=playground
+      - POSTGRES_USER=pgmman
+      - POSTGRES_PASSWORD=jjangpgm
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+
+  django:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - DJANGO_DEBUG=True
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_PORT=5432
+      - DJANGO_DB_NAME=playground
+      - DJANGO_DB_USERNAME=pgmman
+      - DJANGO_DB_PASSWORD=jjangpgm
+      - DJANGO_SECRET_KEY=jjangpgm
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    links:
+      - db
+    command:
+      - bash
+      - -c
+      - |
+        python manage.py migrate
+        python manage.py runserver 0:8000
